@@ -1,4 +1,5 @@
 import { Sequelize } from 'sequelize';
+import mysql2 from 'mysql2';
 import 'dotenv/config';
 
 export const sequelize = new Sequelize(
@@ -9,6 +10,7 @@ export const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT),
         dialect: 'mysql',
+        dialectModule: mysql2,
         // إعدادات الـ Pool بتمنع الـ ECONNRESET
         pool: {
             max: 5,
