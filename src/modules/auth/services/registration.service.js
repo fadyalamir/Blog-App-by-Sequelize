@@ -30,20 +30,42 @@ import { errorHandling } from "../../../utils/errorHandling.js";
 //   }
 // }
 
-export const signup = async(req, res, next) => {
+// export const signup = async(req, res, next) => {
+//   try {
+//     const {userName, email, password} = req.body;
+//     const user = await UserModel.findOrCreate({
+//       where:{
+//         email
+//       },
+//       defaults:{userName, email, password}
+//     });
+//     return user[1] ? res.status(201).json({message: "Signup", user}) : res.status(409).json({message: "Email exist"})
+//   } catch(error) {
+//     await errorHandling(error, res);
+//   }
+// }
+
+export const signup = async (req, res, next) => {
   try {
-    const {userName, email, password} = req.body;
-    const user = await UserModel.findOrCreate({
-      where:{
-        email
-      },
-      defaults:{userName, email, password}
-    });
-    return user[1] ? res.status(201).json({message: "Signup", user}) : res.status(409).json({message: "Email exist"})
-  } catch(error) {
+    const { userName, email, password } = req.body;
+
+    // 1. التأكد أولاً إذا كان المستخدم موجوداً
+    const isExist = await UserModel.findOne({ where: { email } });
+    
+    if (isExist) {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    // 2. إنشاء المستخدم الجديد
+    const user = await UserModel.create({ userName, email, password });
+
+    return res.status(201).json({ message: "Signup Successful", user });
+    
+  } catch (error) {
+    // نمرر الخطأ للـ global error handling
     await errorHandling(error, res);
   }
-}
+};
 
 export const login = async(req, res, next) => {
   try {
